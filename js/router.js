@@ -1,6 +1,6 @@
 "use strict";
 
-import { renderHome, renderPost, renderPosts } from "./render.js";
+import { renderHome, renderPost, initPosts } from "./render.js";
 
 const routes = {
     '/': renderHome(),
@@ -15,7 +15,7 @@ export function renderRoute(path) {
     const app = document.getElementById('app');
     if (routes[normalizedPath]) {
         app.innerHTML = routes[normalizedPath];
-        if(normalizedPath === '/') renderPosts();
+        if(normalizedPath === '/') initPosts();
     } else {
         app.innerHTML = '<h1>404</h1><p>Такой страницы нет</p>';
     }

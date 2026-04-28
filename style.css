@@ -16,7 +16,15 @@ body {
 .container {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     padding: 2rem 6rem;
+    gap: 2rem;
+    min-height: 100vh;
+}
+
+.posts {
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
 }
 
@@ -44,14 +52,14 @@ body {
     gap: 2rem;
 }
 
-.post p{
+.post p {
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.post a{
+.post a {
     color: antiquewhite;
     text-decoration: none;
     align-self: flex-end;
@@ -63,7 +71,17 @@ body {
     gap: 1rem;
 }
 
-.pagination a{
+.pagination ul {
+    display: flex;
+    gap: 1rem;
+    list-style-type: none;
+}
+
+.pagination a {
     color: antiquewhite;
     text-decoration: none;
+}
+
+.active-page {
+    color: black !important;
 }

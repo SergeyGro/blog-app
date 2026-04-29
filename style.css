@@ -13,14 +13,26 @@ body {
     background-color: rgb(138, 103, 255);
 }
 
+a {
+    color: antiquewhite;
+    text-decoration: none;
+}
+
 .container {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 2rem 6rem;
     gap: 2rem;
     min-height: 100vh;
 }
+
+.container-posts {
+    justify-content: space-between;
+}
+
+/* .container-post {
+    
+} */
 
 .posts {
     display: flex;
@@ -55,13 +67,12 @@ body {
 .post p {
     display: -webkit-box;
     -webkit-line-clamp: 4;
+    line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
 .post a {
-    color: antiquewhite;
-    text-decoration: none;
     align-self: flex-end;
 }
 
@@ -77,10 +88,9 @@ body {
     list-style-type: none;
 }
 
-.pagination a {
-    color: antiquewhite;
-    text-decoration: none;
-}
+/* .pagination a {
+    
+} */
 
 .active-page {
     color: black !important;

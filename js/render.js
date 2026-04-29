@@ -1,10 +1,11 @@
 "use strict";
 
-import { getPosts } from "./api.js";
+import { getPosts, getPost } from "./api.js";
+import { handleLinks } from "./router.js";
 
 let allPosts = [];
 let currentPage = 1;
-const pageСounts = 8; 
+const pageСounts = 10; 
 
 export async function initPosts() {
     allPosts = await getPosts();
@@ -15,7 +16,7 @@ export async function initPosts() {
 
 export function renderHome() {
     return `
-        <div class="container">
+        <div class="container container-posts">
             <div class="posts">
                 <h1>Посты</h1>
                 <div class="posts-block">
@@ -30,12 +31,16 @@ export function renderHome() {
         </div>`;
 }
 
-export function renderPost() {
+export async function renderPost(href) {
+    const post = await getPost(href);
     return `
-        <h1>Пост</h1>
-        <div>
-            <p>Описание поста</p>
-            <p>Еще инфа</p>
+        <div class="container container-post">
+            <h1>${post.title}</h1>
+            <div>
+                <p>${post.body}</p>
+                <p>${post.thumbnail}</p>
+            </div>
+            <a href="/" class="home-link">Назад к списку</a>
         </div>`;
 }
 
@@ -51,8 +56,18 @@ function renderPosts(){
                 <a href="/get/${post.postId}" class="read-more">Читать далее</a>
             </article>
         `).join('')}
-    `
+    `;
+    handleLinks();
 }
+
+// function handlelinksPage() {
+//     const pageLinks = document.querySelectorAll('.read-more');
+//     pageLinks.forEach(link => link.addEventListener('click', e => {
+//         e.preventDefault();
+//         const href = link.getAttribute('href');
+//         renderPost(href);
+//     }))
+// }
 
 function renderPagination() {
     const nav = document.querySelector('.pagination');

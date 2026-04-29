@@ -2,14 +2,9 @@
 
 import { renderRoute, handleLinks } from "./router.js";
 
-function initPage(){
+document.addEventListener('DOMContentLoaded', () => {
     renderRoute(window.location.pathname);
-    handleLinks();
     window.addEventListener('popstate', () => {
     renderRoute(window.location.pathname);
     });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    initPage();
 });

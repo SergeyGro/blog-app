@@ -1,6 +1,6 @@
 "use strict";
 
-import { getPosts, getPost } from "./api.js";
+import { getPosts } from "./api.js";
 import { handleLinks } from "./router.js";
 
 let allPosts = [];
@@ -31,8 +31,9 @@ export function renderHome() {
         </div>`;
 }
 
-export async function renderPost(href) {
-    const post = await getPost(href);
+export function renderPost(href) {
+    const postId = Number(href.slice(6));
+    const post = allPosts.find(p => p.postId === postId);
     return `
         <div class="container container-post">
             <h1>${post.title}</h1>
@@ -53,7 +54,7 @@ function renderPosts(){
             <article class="post">
                 <h2>${post.title}</h2>
                 <p>${post.body}</p>
-                <a href="/get/${post.postId}" class="read-more">Читать далее</a>
+                <a href="/post/${post.postId}" class="read-more">Читать далее</a>
             </article>
         `).join('')}
     `;

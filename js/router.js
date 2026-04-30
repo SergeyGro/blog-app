@@ -2,7 +2,7 @@
 
 import { renderHome, renderPost, initPosts } from "./render.js";
 
-export async function renderRoute(path) {
+export function renderRoute(path) {
     let normalizedPath = path;
     if (normalizedPath !== '/' && normalizedPath.endsWith('/')) {
         normalizedPath = normalizedPath.slice(0, -1);
@@ -11,8 +11,8 @@ export async function renderRoute(path) {
     if (normalizedPath === '/') {
         app.innerHTML = renderHome();
         initPosts();
-    } else if (normalizedPath.includes('get')){
-        app.innerHTML = await renderPost(path);
+    } else if (normalizedPath.includes('post')){
+        app.innerHTML = renderPost(path);
     } else {
         app.innerHTML = '<h1>404</h1><p>Такой страницы нет</p>';
     }

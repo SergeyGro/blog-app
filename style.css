@@ -18,11 +18,47 @@ a {
     text-decoration: none;
 }
 
+dialog {
+    padding: 1.5rem;
+    border: none;
+    border-radius: 1rem;
+    margin: auto;
+    width: clamp(270px, 70%, 650px);
+    height: clamp(50vh, 60vh ,70vh);
+}
+
+.modalForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.modalBtnMenu {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 6rem;
+    height: 3.5rem;
+    background-color: violet;
+}
+
+.home-link {
+    font-size: 2rem;
+    font-weight: 600;
+    color: black;
+}
+
 .container {
     display: flex;
     flex-direction: column;
     padding: 2rem 6rem;
-    gap: 2rem;
     min-height: 100vh;
 }
 

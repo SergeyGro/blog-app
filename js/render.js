@@ -1,6 +1,6 @@
 "use strict";
 
-import { getPosts } from "./api.js";
+import { getPosts, getPost } from "./api.js";
 import { handleLinks } from "./router.js";
 
 let allPosts = [];
@@ -18,7 +18,6 @@ export function renderHome() {
     return `
         <div class="container container-posts">
             <div class="posts">
-                <h1>Посты</h1>
                 <div class="posts-block">
 
                 </div>
@@ -31,9 +30,22 @@ export function renderHome() {
         </div>`;
 }
 
-export function renderPost(href) {
-    const postId = Number(href.slice(6));
-    const post = allPosts.find(p => p.postId === postId);
+// export function renderPost(href) {
+//     const postId = Number(href.slice(6));
+//     const post = allPosts.find(p => p.postId === postId);
+//     return `
+//         <div class="container container-post">
+//             <h1>${post.title}</h1>
+//             <div>
+//                 <p>${post.body}</p>
+//                 <p>${post.thumbnail}</p>
+//             </div>
+//             <a href="/" class="home-link-post">Назад к списку</a>
+//         </div>`;
+// }
+
+export async function renderPost(href) {
+    const post = await getPost(href);
     return `
         <div class="container container-post">
             <h1>${post.title}</h1>
@@ -41,7 +53,7 @@ export function renderPost(href) {
                 <p>${post.body}</p>
                 <p>${post.thumbnail}</p>
             </div>
-            <a href="/" class="home-link">Назад к списку</a>
+            <a href="/" class="home-link-post">Назад к списку</a>
         </div>`;
 }
 
@@ -54,21 +66,12 @@ function renderPosts(){
             <article class="post">
                 <h2>${post.title}</h2>
                 <p>${post.body}</p>
-                <a href="/post/${post.postId}" class="read-more">Читать далее</a>
+                <a href="${post.id}" class="read-more">Читать далее</a>
             </article>
         `).join('')}
     `;
     handleLinks();
 }
-
-// function handlelinksPage() {
-//     const pageLinks = document.querySelectorAll('.read-more');
-//     pageLinks.forEach(link => link.addEventListener('click', e => {
-//         e.preventDefault();
-//         const href = link.getAttribute('href');
-//         renderPost(href);
-//     }))
-// }
 
 function renderPagination() {
     const nav = document.querySelector('.pagination');

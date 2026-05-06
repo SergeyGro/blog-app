@@ -27,3 +27,31 @@ export async function getPost(id) {
         return [];
     }
 }
+
+export async function addPost(post) {
+    try {
+        const response = await fetch(`${API_URL}`, {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify(post)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch(err){
+        console.error(`Ошибочка вышла: ${err}`);
+    }
+}
+
+export async function deletePost(post) {
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch(err){
+        console.error(`Ошибочка вышла: ${err}`);
+    }
+}

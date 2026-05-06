@@ -1,7 +1,7 @@
 "use strict";
 
 import Post from "./post.js";
-import { getPosts } from "../api.js";
+import { addPost } from "../api.js";
 
 export function openModal(){
   const modalBtn = document.getElementById('showModalBtn');
@@ -18,13 +18,12 @@ export function closeModal(){
     });
 }
 
-export async function addPost() {
+export async function createPost() {
     const btn = document.getElementById('addPostBtn');
-    const posts = await getPosts();
     btn.addEventListener('click', () => {
         const postForm = document.forms.postForm;
-        const post = new Post(posts.length + 1, postForm.title.value, postForm.body.value);
-        // console.log();
+        const post = new Post(postForm.title.value, postForm.body.value);
+        addPost(post.getPost());
     })
 }
 

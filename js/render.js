@@ -3,15 +3,19 @@
 import { getPosts, getPost } from "./api.js";
 import { handleLinks } from "./router.js";
 
-let allPosts = [];
 let currentPage = 1;
 const pageСounts = 10; 
 
 export async function initPosts() {
-    allPosts = await getPosts();
-    renderPosts();
-    renderPagination();
-    handlePagesNav();
+    const posts = await getPosts();
+    renderPosts(posts);
+    renderPagination(posts);
+    handlePagesNav(posts);
+}
+
+export async function initPost(href) {
+    const post = await getPost(href);
+    renderPost(post);
 }
 
 export function renderHome() {
@@ -30,38 +34,18 @@ export function renderHome() {
         </div>`;
 }
 
-// export function renderPost(href) {
-//     const postId = Number(href.slice(6));
-//     const post = allPosts.find(p => p.postId === postId);
-//     return `
-//         <div class="container container-post">
-//             <h1>${post.title}</h1>
-//             <div>
-//                 <p>${post.body}</p>
-//                 <p>${post.thumbnail}</p>
-//             </div>
-//             <a href="/" class="home-link-post">Назад к списку</a>
-//         </div>`;
-// }
-
-export async function renderPost(href) {
-    const post = await getPost(href);
+export function renderPostPage() {
     return `
         <div class="container container-post">
-            <h1>${post.title}</h1>
-            <div>
-                <p>${post.body}</p>
-                <p>${post.thumbnail}</p>
-            </div>
-            <a href="/" class="home-link-post">Назад к списку</a>
+            
         </div>`;
 }
 
-function renderPosts(){
+function renderPosts(posts){
     const postsBlock = document.querySelector('.posts-block');
     const end = pageСounts * currentPage;
     const start = end - pageСounts;
-    const portionPosts = allPosts.slice(start, end);
+    const portionPosts = posts.slice(start, end);
     postsBlock.innerHTML = `${portionPosts.map(post => `
             <article class="post">
                 <h2>${post.title}</h2>
@@ -73,9 +57,20 @@ function renderPosts(){
     handleLinks();
 }
 
-function renderPagination() {
+function renderPost(post) {
+    const postBlock = document.querySelector('.container-post');
+    postBlock.innerHTML = `
+        <h1>${post.title}</h1>
+        <div>
+            <p>${post.body}</p>
+            <p>${post.thumbnail}</p>
+        </div>
+        <a href="/" class="home-link-post">Назад к списку</a>`;
+}
+
+function renderPagination(posts) {
     const nav = document.querySelector('.pagination');
-    const maxPages = Math.ceil(allPosts.length / pageСounts);
+    const maxPages = Math.ceil(posts.length / pageСounts);
     let pageElements = '';
     for (let i = 1; i <= maxPages; i++){
         const page = `<li><a href="#">${i}</a></li>`;
@@ -85,7 +80,7 @@ function renderPagination() {
     showCurrentPage();
 }
 
-function handlePagesNav() {
+function handlePagesNav(posts) {
     const pages = document.querySelector('.nav-pages');
     const prevBtn = document.getElementById('prev-page');
     const nextBtn = document.getElementById('next-page');
@@ -93,20 +88,20 @@ function handlePagesNav() {
         e.preventDefault();
         currentPage = Number(e.target.text);
         showCurrentPage()
-        renderPosts();
+        renderPosts(posts);
     }));
     prevBtn.addEventListener('click', () => {
         if(currentPage > 1) {
             currentPage = currentPage - 1;
             showCurrentPage()
-            renderPosts();
+            renderPosts(posts);
         }
     })
     nextBtn.addEventListener('click', () => {
-        if(currentPage < Math.ceil(allPosts.length / pageСounts)) {
+        if(currentPage < Math.ceil(posts.length / pageСounts)) {
             currentPage = currentPage + 1;
             showCurrentPage()
-            renderPosts();
+            renderPosts(posts);
         }
     })
 }

@@ -1,12 +1,12 @@
 "use strict";
 
-import { getModal, openModal, closeModal, addPost } from "./modal.js";
+import { getModal, openModal, closeModal, createPost} from "./modal.js";
 
 export function initMenu() {
     renderMenu();
     openModal();
     closeModal();
-    addPost();
+    createPost();
 }
 
 function renderMenu() {

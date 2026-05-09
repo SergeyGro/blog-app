@@ -1,10 +1,10 @@
 "use strict";
 
-import { getPosts, getPost } from "./api.js";
+import { getPosts, getPost, deletePost } from "./api.js";
 import { handleLinks } from "./router.js";
 
 let currentPage = 1;
-const pageСounts = 10; 
+const pageСounts = 10;
 
 export async function initPosts() {
     const posts = await getPosts();
@@ -16,6 +16,7 @@ export async function initPosts() {
 export async function initPost(href) {
     const post = await getPost(href);
     renderPost(post);
+    handleEdit();
 }
 
 export function renderHome() {
@@ -49,23 +50,24 @@ function renderPosts(posts){
     postsBlock.innerHTML = `${portionPosts.map(post => `
             <article class="post">
                 <h2>${post.title}</h2>
+                <button class="delete-post-btn" data-id="${post.id}">X</button>
                 <p>${post.body}</p>
                 <a href="${post.id}" class="read-more">Читать далее</a>
             </article>
         `).join('')}
     `;
     handleLinks();
+    handleDelete();
 }
 
 function renderPost(post) {
     const postBlock = document.querySelector('.container-post');
     postBlock.innerHTML = `
         <h1>${post.title}</h1>
-        <div>
-            <p>${post.body}</p>
-            <p>${post.thumbnail}</p>
-        </div>
-        <a href="/" class="home-link-post">Назад к списку</a>`;
+        <p>${post.body}</p>
+        <button class="edit-post-btn" data-id="${post.id}">Редактировать</button>
+        <a href="/" class="home-link-post">Назад к списку</a>
+        <button>X</button>`;
 }
 
 function renderPagination(posts) {
@@ -103,6 +105,21 @@ function handlePagesNav(posts) {
             showCurrentPage()
             renderPosts(posts);
         }
+    })
+}
+
+function handleDelete() {
+    const btn = document.querySelectorAll('.delete-post-btn');
+    btn.forEach(e => e.addEventListener('click', () => {
+        if (confirm('Удалить пост?')) deletePost(e.dataset.id);
+        return;
+    }))
+}
+
+function handleEdit() {
+    const btn = document.querySelector('.edit-post-btn');
+    btn.addEventListener('click', () => {
+
     })
 }
 

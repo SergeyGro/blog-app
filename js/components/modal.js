@@ -20,8 +20,24 @@ export function closeModal(){
 
 export async function createPost() {
     const btn = document.getElementById('addPostBtn');
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
         const postForm = document.forms.postForm;
+        if(postForm.title.style.borderColor === 'red' && postForm.title.value !== ''){
+                    postForm.title.style.borderColor = 'black';
+        }
+        if(postForm.body.style.borderColor === 'red' && postForm.body.value !== ''){
+                    postForm.body.style.borderColor = 'black';
+        }
+        if (postForm.title.value === '' || postForm.body.value === ''){
+            e.preventDefault()
+            if (postForm.title.value === ''){
+                postForm.title.style.borderColor = 'red';
+            }
+            if (postForm.body.value === ''){
+                postForm.body.style.borderColor = 'red';
+            }
+            return;
+        }
         const post = new Post(postForm.title.value, postForm.body.value);
         addPost(post.getPost());
     })

@@ -43,7 +43,7 @@ export async function addPost(post) {
     }
 }
 
-export async function deletePost(post) {
+export async function deletePost(id) {
     try {
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'DELETE'

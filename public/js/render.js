@@ -1,6 +1,6 @@
 "use strict";
 
-import { getPosts, getPost, deletePost } from "./api.js";
+import { getPosts, getPost, deletePost, editPost } from "./api.js";
 import { handleLinks } from "./router.js";
 
 let currentPage = 1;
@@ -16,7 +16,7 @@ export async function initPosts() {
 export async function initPost(href) {
     const post = await getPost(href);
     renderPost(post);
-    handleEdit();
+    handleEdit(post);
 }
 
 export function renderHome() {
@@ -112,14 +112,24 @@ function handleDelete() {
     const btn = document.querySelectorAll('.delete-post-btn');
     btn.forEach(e => e.addEventListener('click', () => {
         if (confirm('Удалить пост?')) deletePost(e.dataset.id);
-        return;
+        return initPosts();
     }))
 }
 
-function handleEdit() {
+function handleEdit(post) {
     const btn = document.querySelector('.edit-post-btn');
-    btn.addEventListener('click', () => {
-
+    const postBlock = document.querySelector('.container-post');
+    let isEditing = false;
+    btn.addEventListener('click', async function(e) {
+        if(!isEditing) {
+            postBlock.children[0].innerHTML = `<input type="text" value="${post.title}">`;
+            postBlock.children[1].innerHTML = `<input type="text" value="${post.body}">`;
+            postBlock.children[2].innerHTML = 'Сохранить';
+            isEditing = true;
+        } else {
+            await editPost(post.id, postBlock.children[0].children[0].value, postBlock.children[1].children[0].value);
+            initPost(post.id.toString());
+        }
     })
 }
 

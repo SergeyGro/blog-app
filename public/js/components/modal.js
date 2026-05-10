@@ -2,6 +2,7 @@
 
 import Post from "./post.js";
 import { addPost } from "../api.js";
+import { initPosts } from "../render.js";
 
 export function openModal(){
   const modalBtn = document.getElementById('showModalBtn');
@@ -20,7 +21,7 @@ export function closeModal(){
 
 export async function createPost() {
     const btn = document.getElementById('addPostBtn');
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async function(e) {
         const postForm = document.forms.postForm;
         if(postForm.title.style.borderColor === 'red' && postForm.title.value !== ''){
                     postForm.title.style.borderColor = 'black';
@@ -39,7 +40,8 @@ export async function createPost() {
             return;
         }
         const post = new Post(postForm.title.value, postForm.body.value);
-        addPost(post.getPost());
+        await addPost(post.getPost());
+        if(window.location.pathname === '/') initPosts();
     })
 }
 

@@ -42,6 +42,7 @@ export async function createPost() {
         const post = new Post(postForm.title.value, postForm.body.value);
         await addPost(post.getPost());
         if(window.location.pathname === '/') initPosts();
+        postForm.reset();
     })
 }
 

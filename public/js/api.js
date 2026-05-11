@@ -48,11 +48,15 @@ export async function deletePost(id) {
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'DELETE'
         });
-        if (!response.ok) {
+        if (response.ok) {
+            return true;
+        } else {
             throw new Error(`HTTP error! status: ${response.status}`);
+            return false;
         }
     } catch(err){
         console.error(`Ошибочка вышла: ${err}`);
+        return false;
     }
 }
 

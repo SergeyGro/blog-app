@@ -17,6 +17,7 @@ export async function initPost(href) {
     const post = await getPost(href);
     renderPost(post);
     handleEdit(post);
+    handleDelete(false);
 }
 
 export function renderHome() {
@@ -47,6 +48,10 @@ function renderPosts(posts){
     const end = pageСounts * currentPage;
     const start = end - pageСounts;
     const portionPosts = posts.slice(start, end);
+    if (portionPosts.length === 0) {
+        currentPage--;
+        return renderPosts(posts);
+    }
     postsBlock.innerHTML = `${portionPosts.map(post => `
             <article class="post">
                 <h2>${post.title}</h2>
@@ -57,7 +62,7 @@ function renderPosts(posts){
         `).join('')}
     `;
     handleLinks();
-    handleDelete();
+    handleDelete(true);
 }
 
 function renderPost(post) {
@@ -67,7 +72,7 @@ function renderPost(post) {
         <p>${post.body}</p>
         <button class="edit-post-btn" data-id="${post.id}">Редактировать</button>
         <a href="/" class="home-link-post">Назад к списку</a>
-        <button>X</button>`;
+        <button class="delete-post-btn" data-id="${post.id}">X</button>`;
 }
 
 function renderPagination(posts) {
@@ -89,30 +94,44 @@ function handlePagesNav(posts) {
     pages.childNodes.forEach(elem => elem.firstChild.addEventListener('click', e => {
         e.preventDefault();
         currentPage = Number(e.target.text);
-        showCurrentPage()
+        showCurrentPage();
         renderPosts(posts);
     }));
     prevBtn.addEventListener('click', () => {
         if(currentPage > 1) {
             currentPage = currentPage - 1;
-            showCurrentPage()
+            showCurrentPage();
             renderPosts(posts);
         }
     })
     nextBtn.addEventListener('click', () => {
         if(currentPage < Math.ceil(posts.length / pageСounts)) {
             currentPage = currentPage + 1;
-            showCurrentPage()
+            showCurrentPage();
             renderPosts(posts);
         }
     })
 }
 
-function handleDelete() {
+function handleDelete(isHome) {
     const btn = document.querySelectorAll('.delete-post-btn');
-    btn.forEach(e => e.addEventListener('click', () => {
-        if (confirm('Удалить пост?')) deletePost(e.dataset.id);
-        return initPosts();
+    btn.forEach(e => e.addEventListener('click', async () => {
+        if (confirm('Удалить пост?')) {
+            if (isHome) {
+                await deletePost(e.dataset.id);
+                return initPosts();
+            } else {
+                const res = await deletePost(e.dataset.id);
+                if (res) {
+                    const postBlock = document.querySelector('.container-post');
+                    postBlock.innerHTML = `
+                        <h1>Пост удален</h1>
+                        <a href="/" class="home-link-post">Назад к списку</a>`;
+                } else {
+                    return;
+                }
+            }
+        } 
     }))
 }
 

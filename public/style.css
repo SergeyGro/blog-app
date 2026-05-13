@@ -124,9 +124,9 @@ dialog {
     list-style-type: none;
 }
 
-/* .pagination a {
-    
-} */
+.pagination ul li {
+    color: white;
+}
 
 .active-page {
     color: black !important;

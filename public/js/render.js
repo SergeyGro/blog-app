@@ -10,7 +10,7 @@ export async function initPosts() {
     const posts = await getPosts();
     renderPosts(posts);
     renderPagination(posts);
-    handlePagesNav(posts);
+    handleBtnPagesNav(posts);
 }
 
 export async function initPost(href) {
@@ -43,7 +43,7 @@ export function renderPostPage() {
         </div>`;
 }
 
-function renderPosts(posts){
+export function renderPosts(posts){
     const postsBlock = document.querySelector('.posts-block');
     const end = pageСounts * currentPage;
     const start = end - pageСounts;
@@ -77,38 +77,50 @@ function renderPost(post) {
 
 function renderPagination(posts) {
     const nav = document.querySelector('.pagination');
-    const maxPages = Math.ceil(posts.length / pageСounts);
+    const totalPages = Math.ceil(posts.length / pageСounts);
+    const start = currentPage - 2 < 1 ? 1 : currentPage - 2;
+    const end = currentPage + 2 > totalPages ? totalPages : currentPage + 2;
     let pageElements = '';
-    for (let i = 1; i <= maxPages; i++){
+    for (let i = start; i <= end; i++){
         const page = `<li><a href="#">${i}</a></li>`;
         pageElements = pageElements + page;
     }
-    nav.childNodes[3].innerHTML = pageElements;
+    if (start > 2) pageElements = '<li><a href="#">1</a></li><li>...</li>' + pageElements;
+    if (totalPages - end > 1) pageElements = pageElements + `<li>...</li><li><a href="#">${totalPages}</a></li>`;
+    if (start === 2) pageElements = '<li><a href="#">1</a></li>' + pageElements;
+    if (totalPages - end === 1) pageElements = pageElements + `<li><a href="#">${totalPages}</a></li>`;
+    nav.children[1].innerHTML = pageElements;
+    handlePagesNav(posts)
     showCurrentPage();
 }
 
 function handlePagesNav(posts) {
     const pages = document.querySelector('.nav-pages');
+    for (let page of pages.children) {
+        page.firstChild.addEventListener('click', e => {
+            e.preventDefault();
+            currentPage = Number(page.firstChild.text);
+            renderPosts(posts);
+            renderPagination(posts);
+        })
+    }
+}
+
+function handleBtnPagesNav(posts) {
     const prevBtn = document.getElementById('prev-page');
     const nextBtn = document.getElementById('next-page');
-    pages.childNodes.forEach(elem => elem.firstChild.addEventListener('click', e => {
-        e.preventDefault();
-        currentPage = Number(e.target.text);
-        showCurrentPage();
-        renderPosts(posts);
-    }));
     prevBtn.addEventListener('click', () => {
         if(currentPage > 1) {
             currentPage = currentPage - 1;
-            showCurrentPage();
             renderPosts(posts);
+            renderPagination(posts);
         }
     })
     nextBtn.addEventListener('click', () => {
         if(currentPage < Math.ceil(posts.length / pageСounts)) {
             currentPage = currentPage + 1;
-            showCurrentPage();
             renderPosts(posts);
+            renderPagination(posts);
         }
     })
 }
@@ -154,5 +166,9 @@ function handleEdit(post) {
 
 function showCurrentPage() {
     const pages = document.querySelector('.nav-pages');
-    pages.childNodes.forEach(elem => elem.firstChild.classList.toggle('active-page', Number(elem.firstChild.text) === currentPage));
+    for (let page of pages.children) {
+        if (page.firstChild.tagName === 'A') {
+            page.firstChild.classList.toggle('active-page', Number(page.firstChild.text) === currentPage);
+        }
+    }
 }

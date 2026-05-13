@@ -74,3 +74,16 @@ export async function editPost(id, title, body) {
         console.error(`Ошибочка вышла: ${err}`);
     }
 }
+
+export async function searchPosts(request) {
+    try {
+        const response = await fetch(`${API_URL}?title_like=${request}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch(err){
+        console.error(`Ошибочка вышла: ${err}`);
+        return [];
+    }
+}

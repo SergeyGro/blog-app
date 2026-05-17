@@ -3,14 +3,29 @@
 import { getPosts, getPost, deletePost, editPost } from "./api.js";
 import { handleLinks } from "./router.js";
 
-let currentPage = 1;
-const pageСounts = 10;
+const state = {
+    posts: [],
+    currentPage: 1,
+    limitPage: 10,
+    totalPages: 1,
+    searchQuery: ''
+}
 
-export async function initPosts() {
-    const posts = await getPosts();
-    renderPosts(posts);
-    renderPagination(posts);
-    handleBtnPagesNav(posts);
+async function getState() {
+    const res = await getPosts(state.currentPage, state.limitPage, state.searchQuery);
+    state.posts = res[0];
+    state.totalPages = res[1];
+}
+
+export async function initHome() {
+    await initPage();
+    handleBtnPagesNav();
+}
+
+export async function initPage() {
+    await getState();
+    renderPosts();
+    renderPagination();
 }
 
 export async function initPost(href) {
@@ -20,11 +35,17 @@ export async function initPost(href) {
     handleDelete(false);
 }
 
+export function addSearchQuery(value) {
+    state.searchQuery = value;
+    state.currentPage = 1;
+    initPage();
+}
+
 export function renderHome() {
     return `
         <div class="container container-posts">
             <div class="posts">
-                <div class="posts-block">
+                <div class="posts">
 
                 </div>
             </div>
@@ -43,16 +64,13 @@ export function renderPostPage() {
         </div>`;
 }
 
-export function renderPosts(posts){
-    const postsBlock = document.querySelector('.posts-block');
-    const end = pageСounts * currentPage;
-    const start = end - pageСounts;
-    const portionPosts = posts.slice(start, end);
-    if (portionPosts.length === 0) {
-        currentPage--;
-        return renderPosts(posts);
+function renderPosts(){
+    const postsBlock = document.querySelector('.posts');
+    if (state.posts.length === 0 && state.currentPage !== 1) {
+        state.currentPage--;
+        return initPage();
     }
-    postsBlock.innerHTML = `${portionPosts.map(post => `
+    postsBlock.innerHTML = `${state.posts.map(post => `
             <article class="post">
                 <h2>${post.title}</h2>
                 <button class="delete-post-btn" data-id="${post.id}">X</button>
@@ -75,52 +93,48 @@ function renderPost(post) {
         <button class="delete-post-btn" data-id="${post.id}">X</button>`;
 }
 
-function renderPagination(posts) {
+function renderPagination() {
     const nav = document.querySelector('.pagination');
-    const totalPages = Math.ceil(posts.length / pageСounts);
-    const start = currentPage - 2 < 1 ? 1 : currentPage - 2;
-    const end = currentPage + 2 > totalPages ? totalPages : currentPage + 2;
+    const start = state.currentPage - 2 < 1 ? 1 : state.currentPage - 2;
+    const end = state.currentPage + 2 > state.totalPages ? state.totalPages : state.currentPage + 2;
     let pageElements = '';
     for (let i = start; i <= end; i++){
         const page = `<li><a href="#">${i}</a></li>`;
         pageElements = pageElements + page;
     }
     if (start > 2) pageElements = '<li><a href="#">1</a></li><li>...</li>' + pageElements;
-    if (totalPages - end > 1) pageElements = pageElements + `<li>...</li><li><a href="#">${totalPages}</a></li>`;
+    if (state.totalPages - end > 1) pageElements = pageElements + `<li>...</li><li><a href="#">${state.totalPages}</a></li>`;
     if (start === 2) pageElements = '<li><a href="#">1</a></li>' + pageElements;
-    if (totalPages - end === 1) pageElements = pageElements + `<li><a href="#">${totalPages}</a></li>`;
+    if (state.totalPages - end === 1) pageElements = pageElements + `<li><a href="#">${state.totalPages}</a></li>`;
     nav.children[1].innerHTML = pageElements;
-    handlePagesNav(posts)
+    handlePagesNav()
     showCurrentPage();
 }
 
-function handlePagesNav(posts) {
+function handlePagesNav() {
     const pages = document.querySelector('.nav-pages');
     for (let page of pages.children) {
-        page.firstChild.addEventListener('click', e => {
+        page.firstChild.addEventListener('click', async e => {
             e.preventDefault();
-            currentPage = Number(page.firstChild.text);
-            renderPosts(posts);
-            renderPagination(posts);
+            state.currentPage = Number(page.firstChild.text);
+            await initPage();
         })
     }
 }
 
-function handleBtnPagesNav(posts) {
+function handleBtnPagesNav() {
     const prevBtn = document.getElementById('prev-page');
     const nextBtn = document.getElementById('next-page');
-    prevBtn.addEventListener('click', () => {
-        if(currentPage > 1) {
-            currentPage = currentPage - 1;
-            renderPosts(posts);
-            renderPagination(posts);
+    prevBtn.addEventListener('click', async () => {
+        if(state.currentPage > 1) {
+            state.currentPage--;
+            await initPage();
         }
     })
-    nextBtn.addEventListener('click', () => {
-        if(currentPage < Math.ceil(posts.length / pageСounts)) {
-            currentPage = currentPage + 1;
-            renderPosts(posts);
-            renderPagination(posts);
+    nextBtn.addEventListener('click', async () => {
+        if(state.currentPage < state.totalPages) {
+            state.currentPage++;
+            await initPage();
         }
     })
 }
@@ -131,7 +145,7 @@ function handleDelete(isHome) {
         if (confirm('Удалить пост?')) {
             if (isHome) {
                 await deletePost(e.dataset.id);
-                return initPosts();
+                return initPage();
             } else {
                 const res = await deletePost(e.dataset.id);
                 if (res) {
@@ -168,7 +182,7 @@ function showCurrentPage() {
     const pages = document.querySelector('.nav-pages');
     for (let page of pages.children) {
         if (page.firstChild.tagName === 'A') {
-            page.firstChild.classList.toggle('active-page', Number(page.firstChild.text) === currentPage);
+            page.firstChild.classList.toggle('active-page', Number(page.firstChild.text) === state.currentPage);
         }
     }
 }

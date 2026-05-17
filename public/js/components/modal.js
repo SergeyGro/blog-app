@@ -2,7 +2,7 @@
 
 import Post from "./post.js";
 import { addPost } from "../api.js";
-import { initPosts } from "../render.js";
+import { initPage } from "../render.js";
 
 export function openModal(){
   const modalBtn = document.getElementById('showModalBtn');
@@ -41,7 +41,7 @@ export async function createPost() {
         }
         const post = new Post(postForm.title.value, postForm.body.value);
         await addPost(post.getPost());
-        if(window.location.pathname === '/') initPosts();
+        if(window.location.pathname === '/') initPage();
         postForm.reset();
     })
 }

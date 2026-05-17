@@ -2,13 +2,19 @@
 
 const API_URL = 'http://localhost:3000/posts';
 
-export async function getPosts() {
+export async function getPosts(currentPage, limitPage, searchQuery) {
+    let url = `${API_URL}?_page=${currentPage}&_limit=${limitPage}`
+    if (searchQuery.trim() !== '') {
+        url += `&title_like=${encodeURIComponent(searchQuery)}`;
+    }
     try {
-        const response = await fetch(`${API_URL}`);
+        const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        const posts = await response.json();
+        const totalItems = parseInt(response.headers.get('X-Total-Count'), 10);
+        return [posts, Math.ceil(totalItems / limitPage)];
     } catch(err){
         console.error(`Ошибочка вышла: ${err}`);
         return [];
@@ -72,18 +78,5 @@ export async function editPost(id, title, body) {
         }
     } catch(err){
         console.error(`Ошибочка вышла: ${err}`);
-    }
-}
-
-export async function searchPosts(request) {
-    try {
-        const response = await fetch(`${API_URL}?title_like=${request}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
-    } catch(err){
-        console.error(`Ошибочка вышла: ${err}`);
-        return [];
     }
 }

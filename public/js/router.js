@@ -1,12 +1,12 @@
 "use strict";
 
-import { renderHome, initPosts, renderPostPage, initPost } from "./render.js";
+import { renderHome, initHome, renderPostPage, initPost } from "./render.js";
 
 export function renderRoute(path) {
     const app = document.getElementById('app');
     if (path === '/') {
         app.innerHTML = renderHome();
-        initPosts();
+        initHome();
     } else if (!isNaN(path)){
         app.innerHTML = renderPostPage();
         initPost(path);

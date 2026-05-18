@@ -50,9 +50,9 @@ export function renderHome() {
                 </div>
             </div>
             <nav class="pagination">
-                <button id="prev-page">Назад</button>
+                <button id="prev-page"><i class="fas fa-chevron-left"></i></button>
                 <ul class="nav-pages"></ul>
-                <button id="next-page">Вперед</button>
+                <button id="next-page"><i class="fas fa-chevron-right"></i></button>
             </nav>
         </div>`;
 }
@@ -73,7 +73,7 @@ function renderPosts(){
     postsBlock.innerHTML = `${state.posts.map(post => `
             <article class="post">
                 <h2>${post.title}</h2>
-                <button class="delete-post-btn" data-id="${post.id}">X</button>
+                <button class="delete-post-btn" data-id="${post.id}"><i class="fas fa-trash-alt"></i></button>
                 <p>${post.body}</p>
                 <a href="${post.id}" class="read-more">Читать далее</a>
             </article>

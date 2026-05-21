@@ -6,7 +6,7 @@ import { handleLinks } from "./router.js";
 const state = {
     posts: [],
     currentPage: 1,
-    limitPage: 10,
+    limitPage: 6,
     totalPages: 1,
     searchQuery: ''
 }
@@ -59,21 +59,26 @@ export function renderHome() {
 
 export function renderPostPage() {
     return `
-        <div class="container container-post">
-            
-        </div>`;
+        <div class="container container-post"></div>`;
 }
 
 function renderPosts(){
     const postsBlock = document.querySelector('.posts');
+    const pagination = document.querySelector('.pagination');
     if (state.posts.length === 0 && state.currentPage !== 1) {
         state.currentPage--;
         return initPage();
     }
+    if (state.posts.length === 0 && state.currentPage === 1) {
+        postsBlock.innerHTML = '<h1>Список пуст :(</h1>';
+        pagination.classList.add('inactive');
+        return;
+    }
+    pagination.classList.remove('inactive');
     postsBlock.innerHTML = `${state.posts.map(post => `
             <article class="post">
                 <h2>${post.title}</h2>
-                <button class="delete-post-btn" data-id="${post.id}"><i class="fas fa-trash-alt"></i></button>
+                <button data-id="${post.id}"><i class="fas fa-trash-alt"></i></button>
                 <p>${post.body}</p>
                 <a href="${post.id}" class="read-more">Читать далее</a>
             </article>
@@ -86,11 +91,15 @@ function renderPosts(){
 function renderPost(post) {
     const postBlock = document.querySelector('.container-post');
     postBlock.innerHTML = `
+    <div class="post-text-block">
         <h1>${post.title}</h1>
         <p>${post.body}</p>
+    </div>
+    <div class="post-btn-block">
         <button class="edit-post-btn" data-id="${post.id}">Редактировать</button>
-        <a href="/" class="home-link-post">Назад к списку</a>
-        <button class="delete-post-btn" data-id="${post.id}">X</button>`;
+        <button class="delete-post-btn" data-id="${post.id}">Удалить пост</button>
+    </div>
+    <a href="/" class="home-link-post"><i class="fas fa-chevron-left"></i> Назад к списку</a>`;
 }
 
 function renderPagination() {
@@ -152,7 +161,7 @@ function handleDelete(isHome) {
                     const postBlock = document.querySelector('.container-post');
                     postBlock.innerHTML = `
                         <h1>Пост удален</h1>
-                        <a href="/" class="home-link-post">Назад к списку</a>`;
+                        <a href="/" class="home-link-post"><i class="fas fa-chevron-left"></i> Назад к списку</a>`;
                 } else {
                     return;
                 }
@@ -163,16 +172,16 @@ function handleDelete(isHome) {
 
 function handleEdit(post) {
     const btn = document.querySelector('.edit-post-btn');
-    const postBlock = document.querySelector('.container-post');
+    const postTextBlock = document.querySelector('.post-text-block');
     let isEditing = false;
     btn.addEventListener('click', async function(e) {
         if(!isEditing) {
-            postBlock.children[0].innerHTML = `<input type="text" value="${post.title}">`;
-            postBlock.children[1].innerHTML = `<input type="text" value="${post.body}">`;
-            postBlock.children[2].innerHTML = 'Сохранить';
+            postTextBlock.children[0].innerHTML = `<input id="edit-title" type="text" value="${post.title}">`;
+            postTextBlock.children[1].innerHTML = `<textarea id="edit-body" rows="8" required>${post.body}</textarea>`;
+            btn.innerHTML = 'Сохранить';
             isEditing = true;
         } else {
-            await editPost(post.id, postBlock.children[0].children[0].value, postBlock.children[1].children[0].value);
+            await editPost(post.id, postTextBlock.children[0].children[0].value, postTextBlock.children[1].children[0].value);
             initPost(post.id.toString());
         }
     })
